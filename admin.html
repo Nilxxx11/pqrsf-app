@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración PQRS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2><i class="fas fa-shield-alt"></i> Admin PQRS</h2>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#" id="btnReportes"><i class="fas fa-clipboard-list"></i> Reportes</a></li>
+                    <li><a href="#" id="btnEstadisticas"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
+                    <li><a href="#" id="btnUsuarios"><i class="fas fa-users"></i> Usuarios</a></li>
+                    <li><a href="#" id="btnConfig"><i class="fas fa-cog"></i> Configuración</a></li>
+                    <li><a href="#" id="btnLogout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="admin-header">
+                <h1><i class="fas fa-tachometer-alt"></i> Panel de Administración</h1>
+                <div class="user-info">
+                    <span id="userEmail"></span>
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </header>
+
+            <!-- Filtros -->
+            <div class="filters-section">
+                <h2><i class="fas fa-filter"></i> Filtros</h2>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="filterTipo">Tipo de Reporte</label>
+                        <select id="filterTipo" class="filter-select">
+                            <option value="">Todos</option>
+                            <option value="Queja">Queja</option>
+                            <option value="Peticion">Petición</option>
+                            <option value="Reclamo">Reclamo</option>
+                            <option value="Felicitaciones">Felicitaciones</option>
+                            <option value="Sugerencia">Sugerencia</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterCliente">Cliente</label>
+                        <select id="filterCliente" class="filter-select">
+                            <option value="">Todos</option>
+                            <option value="Argos">Argos</option>
+                            <option value="Ecopetrol">Ecopetrol</option>
+                            <!-- ... otros clientes ... -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterEstado">Estado</label>
+                        <select id="filterEstado" class="filter-select">
+                            <option value="">Todos</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En proceso">En proceso</option>
+                            <option value="Resuelto">Resuelto</option>
+                            <option value="Cerrado">Cerrado</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterFecha">Fecha (Desde - Hasta)</label>
+                        <div class="date-range">
+                            <input type="date" id="filterFechaDesde" class="filter-date">
+                            <span>a</span>
+                            <input type="date" id="filterFechaHasta" class="filter-date">
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="btnAplicarFiltros" class="btn-filter">
+                            <i class="fas fa-search"></i> Aplicar Filtros
+                        </button>
+                        <button id="btnLimpiarFiltros" class="btn-clear">
+                            <i class="fas fa-redo"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Reportes -->
+            <div class="reports-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Reportes</h2>
+                    <div class="export-buttons">
+                        <button id="btnExportPDF" class="btn-export">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button id="btnExportCSV" class="btn-export">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button id="btnExportExcel" class="btn-export">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="reportsTable" class="display">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                                <th>Cliente</th>
+                                <th>Reportante</th>
+                                <th>Fecha</th>
+                                <th>Placa</th>
+                                <th>Conductor</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody">
+                            <!-- Los datos se cargarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="stats-section" id="statsSection" style="display: none;">
+                <h2><i class="fas fa-chart-pie"></i> Estadísticas</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e74c3c;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalQuejas">0</h3>
+                            <p>Quejas</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #3498db;">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalPeticiones">0</h3>
+                            <p>Peticiones</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f39c12;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalReclamos">0</h3>
+                            <p>Reclamos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #27ae60;">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalFelicitaciones">0</h3>
+                            <p>Felicitaciones</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para Detalles -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content modal-lg">
+            <span class="close-modal">&times;</span>
+            <div id="modalContent">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

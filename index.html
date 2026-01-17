@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario PQRS - Sistema de Reportes</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-clipboard-list"></i> Sistema de Reportes PQRS</h1>
+            <p class="subtitle">Formulario para Peticiones, Quejas, Reclamos y Sugerencias</p>
+        </header>
+
+        <form id="pqrsForm">
+            <!-- Sección A: Tipo de Reporte -->
+            <section class="form-section">
+                <h2><i class="fas fa-list-alt"></i> A. Tipo de Reporte *</h2>
+                <div class="radio-group" id="tipoReporteGroup">
+                    <label class="radio-option">
+                        <input type="radio" name="tipoReporte" value="Queja" required>
+                        <span class="radio-label">Queja</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="tipoReporte" value="Peticion">
+                        <span class="radio-label">Petición</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="tipoReporte" value="Reclamo">
+                        <span class="radio-label">Reclamo</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="tipoReporte" value="Felicitaciones">
+                        <span class="radio-label">Felicitaciones</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="tipoReporte" value="Sugerencia">
+                        <span class="radio-label">Sugerencia</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Sección B: Campos Generales -->
+            <section class="form-section">
+                <h2><i class="fas fa-info-circle"></i> B. Información General</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="fechaReporte">Fecha del Reporte *</label>
+                        <input type="date" id="fechaReporte" name="fechaReporte" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cliente">Cliente *</label>
+                        <select id="cliente" name="cliente" required>
+                            <option value="">Seleccione un cliente</option>
+                            <option value="Argos">1. Argos</option>
+                            <option value="Ecopetrol">2. Ecopetrol</option>
+                            <option value="Puerto Bahia">3. Puerto Bahía</option>
+                            <option value="Contecar">4. Contecar</option>
+                            <option value="Italco">5. Italco</option>
+                            <option value="Americas">6. Americas</option>
+                            <option value="Hotel Hilton">7. Hotel Hilton</option>
+                            <option value="Cementos Pais">8. Cementos País</option>
+                            <option value="Ajover">9. Ajover</option>
+                            <option value="Cimaco">10. Cimaco</option>
+                            <option value="Proelectrica">11. Proelectrica</option>
+                            <option value="Axalta">12. Axalta</option>
+                            <option value="Counques">13. Counques</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombreReportante">Nombre de quien reporta *</label>
+                        <input type="text" id="nombreReportante" name="nombreReportante" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección C: Información del Servicio -->
+            <section class="form-section">
+                <h2><i class="fas fa-truck"></i> C. Información del Servicio</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="placaVehiculo">Placa del vehículo *</label>
+                        <input type="text" id="placaVehiculo" name="placaVehiculo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombreConductor">Nombre del conductor *</label>
+                        <input type="text" id="nombreConductor" name="nombreConductor" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección D: Mecanismo de Reporte -->
+            <section class="form-section">
+                <h2><i class="fas fa-comment-alt"></i> D. Se reportó por otro medio?</h2>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="mecanismoReporte" value="Whatsapp">
+                        <span class="radio-label">Whatsapp</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="mecanismoReporte" value="Correo">
+                        <span class="radio-label">Correo</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="mecanismoReporte" value="Llamada">
+                        <span class="radio-label">Llamada</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="mecanismoReporte" value="Otro">
+                        <span class="radio-label">Otro</span>
+                    </label>
+                </div>
+                <div class="form-group" id="otroMecanismoContainer" style="display: none;">
+                    <label for="otroMecanismo">Especifique otro medio:</label>
+                    <input type="text" id="otroMecanismo" name="otroMecanismo">
+                </div>
+            </section>
+
+            <!-- Sección Dinámica por Tipo de Reporte -->
+            <section class="form-section" id="seccionDinamica">
+                <div class="placeholder-message">
+                    <i class="fas fa-hand-pointer"></i>
+                    <p>Seleccione un tipo de reporte para ver los campos específicos.</p>
+                </div>
+            </section>
+
+            <!-- Botones de Envío -->
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Enviar Reporte
+                </button>
+                <button type="reset" class="btn-reset">
+                    <i class="fas fa-redo"></i> Limpiar Formulario
+                </button>
+            </div>
+        </form>
+
+        <!-- Modal de Confirmación -->
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <div class="modal-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>¡Reporte Enviado Exitosamente!</h2>
+                <p>Su reporte ha sido registrado en nuestro sistema. Nos pondremos en contacto si es necesario.</p>
+                <button id="closeModalBtn" class="btn-ok">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    
+    <!-- Scripts propios -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/form.js"></script>
+</body>
+</html>
