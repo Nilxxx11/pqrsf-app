@@ -1,21 +1,33 @@
-// Inicializar Firebase
-import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
-import { getAuth } from "firebase/auth";
-
+// Configuración de Firebase
 const firebaseConfig = {
-    apiKey: "TU_API_KEY",
-    authDomain: "TU_PROYECTO.firebaseapp.com",
-    databaseURL: "https://TU_PROYECTO.firebaseio.com",
-    projectId: "TU_PROYECTO",
-    storageBucket: "TU_PROYECTO.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+
+  apiKey: "AIzaSyATgK5vpZ5Kr2X9b-iXibqwoF4VBX2bh1U",
+
+  authDomain: "pqrs-457c0.firebaseapp.com",
+
+  databaseURL: "https://pqrs-457c0-default-rtdb.firebaseio.com",
+
+  projectId: "pqrs-457c0",
+
+  storageBucket: "pqrs-457c0.firebasestorage.app",
+
+  messagingSenderId: "291174163284",
+
+  appId: "1:291174163284:web:b9d637ca17503617d9dec1",
+
+  measurementId: "G-KFGX77GGHX"
+
 };
 
 // Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
 
-export { database, auth };
+// Referencias globales
+const database = firebase.database();
+const auth = firebase.auth();
+
+// Credenciales del administrador predefinido
+const ADMIN_CREDENTIALS = {
+    email: "admin@empresa.com",
+    password: "Admin123!"
+};
