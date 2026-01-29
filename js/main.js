@@ -176,7 +176,7 @@ function enviarCorreoAdmin(reportData, reportId) {
     vehicle_plate: reportData.placa_vehiculo || "No especificada",
     driver_name: reportData.nombre_conductor || "No especificado",
     report_description: reportData.mensaje || reportData.descripcion || "Sin descripción",
-    admin_link: "https://pqrs-457c0.firebaseapp.com/admin.html"
+    admin_link: "https://pqrsf-app.vercel.app/admin.html"
   });
 }
 
