@@ -1,0 +1,191 @@
+/* ================================
+   ESTILOS ESPECÍFICOS PARA GRÁFICAS
+================================ */
+
+/* Contenedores de gráficas */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin-bottom: 2rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--medium-gray);
+}
+
+.chart-container h3 {
+    color: var(--primary-blue);
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--light-blue);
+}
+
+.chart-wrapper {
+    position: relative;
+    height: calc(100% - 60px);
+    width: 100%;
+}
+
+/* Grid de gráficas */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin: 1.5rem 0;
+}
+
+/* Estados de gráficas vacías */
+.chart-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-light);
+    text-align: center;
+    padding: 2rem;
+}
+
+.chart-empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--medium-gray);
+}
+
+.chart-empty-state p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Tooltips personalizados */
+.chartjs-tooltip {
+    background: rgba(30, 58, 138, 0.95);
+    color: white;
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--primary-blue);
+    z-index: 1000;
+}
+
+.chartjs-tooltip .tooltip-header {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: white;
+}
+
+.chartjs-tooltip .tooltip-body {
+    opacity: 0.9;
+}
+
+/* Leyendas personalizadas */
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--light-gray);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+/* Animaciones de carga */
+.chart-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    z-index: 10;
+}
+
+.chart-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--light-gray);
+    border-top-color: var(--primary-blue);
+    border-radius: 50%;
+    animation: chart-spin 1s linear infinite;
+}
+
+@keyframes chart-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive para gráficas */
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .chart-container {
+        height: 280px;
+        padding: 1rem;
+    }
+    
+    .chart-container h3 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-container {
+        height: 250px;
+    }
+    
+    .chart-legend {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+}
+
+/* Estilos específicos para tipos de gráficas */
+.pie-chart-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.bar-chart-container {
+    height: 320px;
+}
+
+.horizontal-bar-chart-container {
+    height: 350px;
+}
+
+/* Mejoras para tooltips en móviles */
+@media (hover: none) and (pointer: coarse) {
+    .chartjs-tooltip {
+        font-size: 1rem;
+        padding: 1rem;
+        max-width: 250px;
+    }
+}
