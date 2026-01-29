@@ -1,0 +1,18 @@
+pqrs-transporte-hb/
+├── index.html                    # Formulario público PQRS
+├── admin.html                    # Panel de administración
+├── css/
+│   ├── style.css                # Estilos formulario público
+│   └── admin.css                # Estilos panel admin
+├── js/
+│   ├── firebase-config.js       # Configuración Firebase
+│   ├── main.js                  # Lógica formulario público
+│   └── admin.js                 # Lógica panel admin
+├── functions/                    # Cloud Functions
+│   ├── index.js                 # Código principal functions
+│   ├── package.json             # Dependencias functions
+│   ├── .env                     # Variables de entorno (NO SUBIR A GITHUB)
+│   └── gmail-setup.txt          # Instrucciones Gmail SMTP
+├── assets/
+│   └── logo.png                 # Logo de la empresa
+└── README.md                    # Instrucciones de instalación

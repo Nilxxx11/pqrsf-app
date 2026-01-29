@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin PQRS | HB Transporte</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/charts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="assets/logo.png">
+    <!-- Firebase SDK v8 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="assets/logo.png" alt="HB Transporte" class="login-logo">
+                <h1><i class="fas fa-lock"></i> Panel de Administración</h1>
+                <p>Sistema de Gestión PQRS - HB Transporte</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="input-group">
+                    <label for="adminEmail"><i class="fas fa-envelope"></i> Correo electrónico</label>
+                    <input type="email" id="adminEmail" placeholder="admin@transportehb.com.co" value="admin@transportehb.com.co">
+                </div>
+                
+                <div class="input-group">
+                    <label for="adminPassword"><i class="fas fa-key"></i> Contraseña</label>
+                    <input type="password" id="adminPassword" placeholder="********" value="AdminHB2026">
+                </div>
+                
+                <button class="login-btn" onclick="adminLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+                
+                <div id="loginError" class="error-message"></div>
+                
+                <div class="login-footer">
+                    <p><i class="fas fa-info-circle"></i> Acceso restringido al personal autorizado</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interfaz Principal Admin (oculta inicialmente) -->
+    <div id="adminInterface" class="admin-interface" style="display: none;">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <img src="assets/logo.png" alt="Logo" class="header-logo">
+                <div>
+                    <h1><i class="fas fa-chart-line"></i> Panel de Administración PQRS</h1>
+                    <p class="subtitle">Gestión de reportes, estadísticas y análisis</p>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <span id="adminUser">Administrador</span>
+                        <span class="user-role">Supervisor</span>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+                <button class="notifications-btn" id="notificationsBtn" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count" id="notificationCount">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Notificaciones -->
+        <div id="notificationsPanel" class="notifications-panel">
+            <div class="notifications-header">
+                <h3><i class="fas fa-bell"></i> Notificaciones</h3>
+                <button class="clear-notifications" onclick="clearNotifications()">
+                    <i class="fas fa-trash"></i> Limpiar
+                </button>
+            </div>
+            <div class="notifications-list" id="notificationsList">
+                <!-- Notificaciones cargadas dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Contenido Principal -->
+        <main class="admin-content">
+            <!-- Dashboard -->
+            <section class="dashboard-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon total">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalReports">0</h3>
+                            <p>Total Reportes</p>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up trend-up"></i>
+                            <span>12%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingReports">0</h3>
+                            <p>Pendientes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon in-process">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="processReports">0</h3>
+                            <p>En Proceso</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon resolved">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="resolvedReports">0</h3>
+                            <p>Resueltos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon complaints">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="complaintReports">0</h3>
+                            <p>Quejas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon suggestions">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="suggestionReports">0</h3>
+                            <p>Sugerencias</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filtros y Acciones -->
+            <section class="filters-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-filter"></i> Filtros de Búsqueda</h2>
+                    <div class="actions">
+                        <button class="btn-primary" onclick="applyFilters()">
+                            <i class="fas fa-search"></i> Aplicar Filtros
+                        </button>
+                        <button class="btn-secondary" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> Limpiar
+                        </button>
+                        <button class="btn-export" onclick="exportToCSV()">
+                            <i class="fas fa-file-csv"></i> Exportar CSV
+                        </button>
+                        <button class="btn-stats" onclick="toggleStats()">
+                            <i class="fas fa-chart-bar"></i> Estadísticas
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label><i class="fas fa-tag"></i> Tipo de Reporte</label>
+                        <select id="filterTipo" multiple>
+                            <option value="Queja">Queja</option>
+                            <option value="Petición">Petición</option>
+                            <option value="Reclamo">Reclamo</option>
+                            <option value="Felicitaciones">Felicitaciones</option>
+                            <option value="Sugerencia">Sugerencia</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label><i class="fas fa-building"></i> Cliente</label>
+                        <select id="filterCliente" multiple>
+                            <option value="Argos">Argos</option>
+                            <option value="Ecopetrol">Ecopetrol</option>
+                            <option value="Puerto Bahía">Puerto Bahía</option>
+                            <option value="Contecar">Contecar</option>
+                            <option value="Italco">Italco</option>
+                            <option value="Americas">Americas</option>
+                            <option value="Hotel Hilton">Hotel Hilton</option>
+                            <option value="Cementos País">Cementos País</option>
+                            <option value="Ajover">Ajover</option>
+                            <option value="Cimaco">Cimaco</option>
+                            <option value="Proelectrica">Proelectrica</option>
+                            <option value="Axalta">Axalta</option>
+                            <option value="Counques">Counques</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label><i class="fas fa-tasks"></i> Estado</label>
+                        <select id="filterEstado" multiple>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En proceso">En proceso</option>
+                            <option value="Resuelto">Resuelto</option>
+                            <option value="Cerrado">Cerrado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group date-group">
+                        <label><i class="fas fa-calendar-alt"></i> Rango de Fechas</label>
+                        <div class="date-inputs">
+                            <input type="date" id="filterFechaDesde" placeholder="Desde">
+                            <span>a</span>
+                            <input type="date" id="filterFechaHasta" placeholder="Hasta">
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label><i class="fas fa-search"></i> Búsqueda por texto</label>
+                        <input type="text" id="filterTexto" placeholder="Nombre, placa, conductor...">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Estadísticas -->
+<section id="statsSection" class="stats-section" style="display: none;">
+    <div class="section-header">
+        <h2><i class="fas fa-chart-pie"></i> Estadísticas y Análisis</h2>
+        <button class="btn-close-stats" onclick="toggleStats()">
+            <i class="fas fa-times"></i> Cerrar
+        </button>
+    </div>
+    
+    <div class="charts-grid">
+        <!-- Gráfico de Tipos -->
+        <div class="chart-container">
+            <h3><i class="fas fa-chart-pie"></i> Distribución por Tipo</h3>
+            <div class="chart-wrapper">
+                <canvas id="chartTipo"></canvas>
+            </div>
+            <div id="tipoLegend" class="chart-legend"></div>
+        </div>
+        
+        <!-- Gráfico de Estados -->
+        <div class="chart-container">
+            <h3><i class="fas fa-chart-bar"></i> Estado de Reportes</h3>
+            <div class="chart-wrapper">
+                <canvas id="chartEstado"></canvas>
+            </div>
+        </div>
+        
+        <!-- Gráfico de Clientes -->
+        <div class="chart-container">
+            <h3><i class="fas fa-building"></i> Top 5 Clientes</h3>
+            <div class="chart-wrapper">
+                <canvas id="chartCliente"></canvas>
+            </div>
+            <div id="clienteLegend" class="chart-legend"></div>
+        </div>
+    </div>
+    
+    <!-- Indicadores de rendimiento -->
+    <div class="performance-metrics">
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="metric-info">
+                <h4>Tiempo Promedio de Respuesta</h4>
+                <div class="metric-value" id="avgResponseTime">0 días</div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="metric-info">
+                <h4>Tasa de Resolución</h4>
+                <div class="metric-value" id="resolutionRate">0%</div>
+            </div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="metric-info">
+                <h4>Clientes Activos</h4>
+                <div class="metric-value" id="activeClients">0</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats-table-container">
+        <h3><i class="fas fa-table"></i> Resumen Mensual</h3>
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th>Mes</th>
+                    <th>Total</th>
+                    <th>Quejas</th>
+                    <th>Reclamos</th>
+                    <th>Sugerencias</th>
+                    <th>Tiempo Promedio</th>
+                </tr>
+            </thead>
+            <tbody id="statsTableBody">
+                <!-- Datos cargados dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+</section>
+
+            <!-- Tabla de Reportes -->
+            <section class="reports-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Reportes PQRS</h2>
+                    <div class="table-info">
+                        <span id="tableCount">Mostrando 0 reportes</span>
+                        <div class="table-actions">
+                            <button class="btn-action refresh-btn" onclick="loadReports()">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                            <button class="btn-action print-btn" onclick="printTable()">
+                                <i class="fas fa-print"></i> Imprimir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="reportsTable" class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                                <th>Cliente</th>
+                                <th>Reportante</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody">
+                            <!-- Datos cargados dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <button class="pagination-btn" onclick="changePage(-1)" id="prevPage" disabled>
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <span id="pageInfo">Página 1 de 1</span>
+                    <button class="pagination-btn" onclick="changePage(1)" id="nextPage" disabled>
+                        Siguiente <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modales -->
+    
+    <!-- Modal Detalles -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-alt"></i> Detalles del Reporte</h2>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!-- Contenido cargado dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+                <button class="btn-primary" onclick="printReport()" id="printReportBtn">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cambiar Estado -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exchange-alt"></i> Cambiar Estado</h2>
+                <span class="close-modal" onclick="closeStatusModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Seleccione el nuevo estado para el reporte <strong id="statusReportId"></strong></p>
+                <div class="status-options">
+                    <label class="status-option">
+                        <input type="radio" name="newStatus" value="Pendiente">
+                        <span class="status-badge status-pendiente">Pendiente</span>
+                    </label>
+                    <label class="status-option">
+                        <input type="radio" name="newStatus" value="En proceso">
+                        <span class="status-badge status-proceso">En proceso</span>
+                    </label>
+                    <label class="status-option">
+                        <input type="radio" name="newStatus" value="Resuelto">
+                        <span class="status-badge status-resuelto">Resuelto</span>
+                    </label>
+                    <label class="status-option">
+                        <input type="radio" name="newStatus" value="Cerrado">
+                        <span class="status-badge status-cerrado">Cerrado</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="statusComment"><i class="fas fa-comment"></i> Comentario interno</label>
+                    <textarea id="statusComment" rows="3" placeholder="Agregue un comentario sobre el cambio de estado..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeStatusModal()">
+                    Cancelar
+                </button>
+                <button class="btn-primary" onclick="updateReportStatus()">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Comentario -->
+    <div id="commentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-comment-medical"></i> Agregar Comentario Interno</h2>
+                <span class="close-modal" onclick="closeCommentModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Reporte: <strong id="commentReportId"></strong></p>
+                <div class="form-group">
+                    <label for="internalComment"><i class="fas fa-edit"></i> Comentario</label>
+                    <textarea id="internalComment" rows="5" placeholder="Escriba aquí el comentario interno..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="commentPriority"><i class="fas fa-exclamation-circle"></i> Prioridad</label>
+                    <select id="commentPriority">
+                        <option value="normal">Normal</option>
+                        <option value="alta">Alta</option>
+                        <option value="urgente">Urgente</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeCommentModal()">
+                    Cancelar
+                </button>
+                <button class="btn-primary" onclick="saveInternalComment()">
+                    <i class="fas fa-save"></i> Guardar Comentario
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Exportar -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-export"></i> Exportar Datos</h2>
+                <span class="close-modal" onclick="closeExportModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <label class="export-option">
+                        <input type="radio" name="exportType" value="current" checked>
+                        <div class="export-card">
+                            <i class="fas fa-filter"></i>
+                            <h4>Datos Filtrados</h4>
+                            <p>Exportar los reportes actualmente filtrados</p>
+                        </div>
+                    </label>
+                    <label class="export-option">
+                        <input type="radio" name="exportType" value="all">
+                        <div class="export-card">
+                            <i class="fas fa-database"></i>
+                            <h4>Todos los Reportes</h4>
+                            <p>Exportar todos los reportes del sistema</p>
+                        </div>
+                    </label>
+                    <label class="export-option">
+                        <input type="radio" name="exportType" value="range">
+                        <div class="export-card">
+                            <i class="fas fa-calendar-alt"></i>
+                            <h4>Por Rango de Fechas</h4>
+                            <p>Exportar reportes por período específico</p>
+                        </div>
+                    </label>
+                </div>
+                
+                <div id="exportRangeOptions" class="export-range-options" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label>Fecha Desde</label>
+                            <input type="date" id="exportFechaDesde">
+                        </div>
+                        <div class="form-col">
+                            <label>Fecha Hasta</label>
+                            <input type="date" id="exportFechaHasta">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="export-formats">
+                    <label class="format-option">
+                        <input type="radio" name="exportFormat" value="csv" checked>
+                        <span class="format-badge csv">CSV</span>
+                    </label>
+                    <label class="format-option">
+                        <input type="radio" name="exportFormat" value="excel">
+                        <span class="format-badge excel">Excel</span>
+                    </label>
+                    <label class="format-option">
+                        <input type="radio" name="exportFormat" value="pdf">
+                        <span class="format-badge pdf">PDF</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeExportModal()">
+                    Cancelar
+                </button>
+                <button class="btn-primary" onclick="confirmExport()">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Cargando datos...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+  // Inicializar EmailJS con TU User ID
+  (function() {
+    emailjs.init('W-hV0478w9QleOXHt'); // Reemplazar con tu ID real
+    console.log('📧 EmailJS inicializado');
+  })();
+</script>
+</body>
+</html>
